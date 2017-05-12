@@ -130,7 +130,7 @@ describe('DELETE /todos:id', () => {
         .end(done);
     });
 
-    it('should return 404 if object id is invaldis', (done) =>{
+    it('should return 404 if object id is invald', (done) =>{
          request(app)
         .get(`/todos/1234`)
         .expect(404)
