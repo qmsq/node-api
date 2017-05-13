@@ -69,6 +69,7 @@ UserSchema.methods.generateAuthToken = function () {
     });
 }; //this is necessary as we use this, this is an instance method
 
+//Middleware 
 UserSchema.pre('save', function (next) {
   var user = this;
 
