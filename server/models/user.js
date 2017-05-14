@@ -40,6 +40,29 @@ UserSchema.methods.toJSON = function () {
     return _.pick(userObject, ['_id', 'email']);
 } //instance method
 
+UserSchema.methods.generateAuthToken = function () {
+    var user = this;
+    var access = 'auth';
+    var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+
+    user.tokens.push({access, token});
+
+    return user.save().then(() => {
+        return token;
+    });
+}; //this is necessary as we use this, this is an instance method
+
+UserSchema.methods.removeToken = function (token) {
+    var user = this;
+
+    return user.update({
+        $pull: {
+            tokens: {token}
+        }
+    });
+};
+
+
 UserSchema.statics.findByToken = function (token) {
     var User = this;
     var decoded;
@@ -78,17 +101,6 @@ UserSchema.statics.findByCredentials = function (email, password) {
     });
 };
 
-UserSchema.methods.generateAuthToken = function () {
-    var user = this;
-    var access = 'auth';
-    var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
-
-    user.tokens.push({access, token});
-
-    return user.save().then(() => {
-        return token;
-    });
-}; //this is necessary as we use this, this is an instance method
 
 //Middleware 
 UserSchema.pre('save', function (next) {
